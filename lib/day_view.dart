@@ -132,7 +132,15 @@ class _DayViewState extends State<DayView> {
     List<DateTime> days = getDaysRange(_selectedDate);
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text("${monthToAbbreviatedString(_selectedDate.month)}"),
+        title: new Text("${_selectedDate.day} ${monthToAbbreviatedString(_selectedDate.month)}"),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.calendar_today),
+            onPressed: () {
+              _openDatePicker();
+            },
+          )
+        ],
       ),
       body: new DayViewEssentials(
         properties: new DayViewProperties(
