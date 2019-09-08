@@ -1,25 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:meta/meta.dart';
 import 'package:intl/intl.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
-import 'dart:developer';
-
+import 'utils/all.dart';
 
 class AppointmentView extends StatefulWidget {
+  
+  final Event event;
+  final int id;
+
+  AppointmentView({Key key, @required this.event, @required this.id});
+
   @override
-  State createState() => new _AppointmentViewState();
+  State createState() => new _AppointmentViewState(event: event, id: id);
 }
 
 class _AppointmentViewState extends State<AppointmentView> {
   
+  final Event event;
+  final int id;
+  
+  _AppointmentViewState({Key key, @required this.event, @required this.id});
+
   final _formKey = GlobalKey<FormState>();
 
   //id will be negative for new appointments
-  int id = -1;
-  String _title = '';
-  DateTime _dateTime;
-  int _duration = 30;
+  String _title;
+  DateTime _startTime;
+  int _duration;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    _title = event.title;
+    _startTime = event.startTime;
+    _duration = event.duration;
+  }
+
+  saveEvent() {
+    //save event
+    Event ev = new Event(title: _title, startTime: _startTime, duration: _duration);
+    Navigator.pop(context, new EventMsg(event: ev, id: id));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +79,7 @@ class _AppointmentViewState extends State<AppointmentView> {
                 ),
                 BasicDateTimeField(
                   onSaved: (val) {
-                    _dateTime = val;
+                    _startTime = val;
                   }
                 ),
                 TextFormField(
@@ -80,7 +103,7 @@ class _AppointmentViewState extends State<AppointmentView> {
                   // initialValue: _duration,
                   keyboardType: TextInputType.number,
                   inputFormatters: <TextInputFormatter>[
-                    WhitelistingTextInputFormatter(RegExp("^[1-5]?[0-9]"))
+                    WhitelistingTextInputFormatter(RegExp("^[1-9]?[0-9]?[0-9]"))
                   ],
                 ),
                 Padding(
@@ -94,17 +117,8 @@ class _AppointmentViewState extends State<AppointmentView> {
                         // Validate returns true if the form is valid, or false
                         // otherwise.
                         if (_formKey.currentState.validate()) {
-
-                          //_formKey.currentState() will contain the data
-                          // log('${_formKey.currentState()}');
-
                           _formKey.currentState.save();
-
-                          log('title $_title');
-                          log('date time $_dateTime');
-                          log('duration $_duration');
-                          //send all of them to day_view
-                          // Navigator.pop(context);
+                          saveEvent();
                         }
                       },
                       child: Text('Submit'),
@@ -164,24 +178,3 @@ class BasicDateTimeField extends StatelessWidget {
     ]);
   }
 }
-
-// class _AppointmentViewState extends State<AppointmentView> { 
-  
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text("Appointment View"),
-//       ),
-//       body: Center(
-//         child: RaisedButton(
-//           onPressed: () {
-//             // Navigate back to first route when tapped.
-//             Navigator.pop(context);
-//           },
-//           child: Text('Go back!'),
-//         ),
-//       ),
-//     );
-//   }
-// }

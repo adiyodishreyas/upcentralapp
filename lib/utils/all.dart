@@ -7,3 +7,4 @@ export 'show_alert_dialog.dart';
 export 'weekday_drop_down_button.dart';
 export 'weekday_to_string.dart';
 export 'month_to_string.dart';
+export 'event.dart';

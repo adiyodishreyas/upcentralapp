@@ -1,26 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
+// import 'package:meta/meta.dart';
 
 import 'package:calendar_views/day_view.dart';
 
 import 'utils/all.dart';
 import 'appointment_form_view.dart';
 
-import 'dart:developer';
-
-@immutable
-class Event {
-  Event({
-    @required this.startMinuteOfDay,
-    @required this.duration,
-    @required this.title,
-  });
-
-  final int startMinuteOfDay;
-  final int duration;
-
-  final String title;
-}
 
 class DayView extends StatefulWidget {
   @override
@@ -35,15 +20,9 @@ class _DayViewState extends State<DayView> {
   void initState() {
     super.initState();
     _selectedDate = new DateTime.now();
-
+  
     _events = <Event>[
-      new Event(startMinuteOfDay: 0, duration: 60, title: "Midnight Party"),
-      new Event(
-          startMinuteOfDay: 6 * 60, duration: 2 * 60, title: "Morning Routine"),
-      new Event(startMinuteOfDay: 6 * 60, duration: 60, title: "Eat Breakfast"),
-      new Event(startMinuteOfDay: 7 * 60, duration: 60, title: "Get Dressed"),
-      new Event(
-          startMinuteOfDay: 18 * 60, duration: 60, title: "Take Dog For A Walk"),
+      new Event(duration: 60, title: "Party Time", startTime: DateTime.now())
     ];
   }
 
@@ -67,11 +46,24 @@ class _DayViewState extends State<DayView> {
         "${(minuteOfDay % 60).toString().padLeft(2, "0")}";
   }
 
-  void _openAppointmentForm() { 
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => AppointmentView()),
-      );
+  void _openAppointmentForm([int id = -1]) async { 
+    Event newEvent = new Event(duration: 0, title: '', startTime: DateTime.now());
+    if( id > -1 ) {
+      newEvent = _events[id];  
+    }
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => AppointmentView(event: newEvent, id: id)),
+    ).then((msg) {
+      //update event list
+      if( msg.id > -1 ) {
+        _events[msg.id] = msg.event;
+      }
+      else {
+        _events.add(msg.event);
+      }
+    });
   }
 
   void _openDatePicker() async {
@@ -94,16 +86,20 @@ class _DayViewState extends State<DayView> {
     
     return _events
         .map(
-          (event) => new StartDurationItem(
-                startMinuteOfDay: event.startMinuteOfDay,
+          (event) { 
+            int id = _events.indexOf(event);
+            return new StartDurationItem(
+                startMinuteOfDay: event.startTime.hour * 60 + event.startTime.minute,
                 duration: event.duration,
                 builder: (context, itemPosition, itemSize) => _eventBuilder(
                       context,
                       itemPosition,
                       itemSize,
                       event,
+                      id
                     ),
-              ),
+              );
+          }
         )
         .toList();
   }
@@ -249,18 +245,24 @@ class _DayViewState extends State<DayView> {
     ItemPosition itemPosition,
     ItemSize itemSize,
     Event event,
+    int id
   ) {
     return new Positioned(
       top: itemPosition.top,
       left: itemPosition.left,
       width: itemSize.width,
       height: itemSize.height,
-      child: new Container(
-        margin: new EdgeInsets.only(left: 1, right: 1, bottom: 1.0),
-        padding: new EdgeInsets.all(2.0),
-        color: Colors.green[200],
-        child: new Text("${event.title}"),
-      ),
+      child: new InkWell(
+        onTap: () {
+          _openAppointmentForm(id);
+        },
+        child: new Container(
+          margin: new EdgeInsets.only(left: 1, right: 1, bottom: 1.0),
+          padding: new EdgeInsets.all(2.0),
+          color: Colors.green[200],
+          child: new Text("${event.title}"),
+        ),
+      )
     );
   }
 }
