@@ -52,7 +52,7 @@ class _DayViewState extends State<DayView> {
       newEvent = _events[id];  
     }
 
-    await Navigator.push(
+    Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => AppointmentView(event: newEvent, id: id)),
     ).then((msg) {

@@ -78,6 +78,7 @@ class _AppointmentViewState extends State<AppointmentView> {
                   initialValue: _title,
                 ),
                 BasicDateTimeField(
+                  startTime: _startTime,
                   onSaved: (val) {
                     _startTime = val;
                   }
@@ -140,14 +141,16 @@ class BasicDateTimeField extends StatelessWidget {
   final format = DateFormat("yyyy-MM-dd HH:mm");
   
   final DateTimeSaveCallback onSaved;
+  final DateTime startTime;
 
-  BasicDateTimeField({Key key, this.onSaved});
+  BasicDateTimeField({Key key, this.onSaved, this.startTime});
 
   @override
   Widget build(BuildContext context) {
     return Column(children: <Widget>[
       // Text('Enter date and time for the appointment (${format.pattern})'),
       DateTimeField(
+        initialValue: startTime,
         decoration: const InputDecoration(
           icon: Icon(Icons.calendar_today),
           hintText: 'Enter date and time',
