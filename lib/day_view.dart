@@ -83,8 +83,18 @@ class _DayViewState extends State<DayView> {
   }
 
   List<StartDurationItem> _getEventsOfDay(DateTime day) {
-    
-    return _events
+    List<Event> eventsOfTheDay = <Event>[];
+
+    _events.forEach((event) {
+      DateTime eventDay = event.startTime;
+      if (day.year == eventDay.year &&
+        day.month == eventDay.month &&
+        day.day == eventDay.day) {
+        eventsOfTheDay.add(event);
+      }
+    });
+
+    return eventsOfTheDay
         .map(
           (event) { 
             int id = _events.indexOf(event);
