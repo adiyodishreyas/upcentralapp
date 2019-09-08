@@ -22,33 +22,6 @@ class Event {
   final String title;
 }
 
-List<Event> eventsOfDay0 = <Event>[
-  new Event(startMinuteOfDay: 0, duration: 60, title: "Midnight Party"),
-  new Event(
-      startMinuteOfDay: 6 * 60, duration: 2 * 60, title: "Morning Routine"),
-  new Event(startMinuteOfDay: 6 * 60, duration: 60, title: "Eat Breakfast"),
-  new Event(startMinuteOfDay: 7 * 60, duration: 60, title: "Get Dressed"),
-  new Event(
-      startMinuteOfDay: 18 * 60, duration: 60, title: "Take Dog For A Walk"),
-];
-
-List<Event> eventsOfDay1 = <Event>[
-  new Event(startMinuteOfDay: 1 * 60, duration: 90, title: "Sleep Walking"),
-  new Event(startMinuteOfDay: 7 * 60, duration: 60, title: "Drive To Work"),
-  new Event(startMinuteOfDay: 8 * 60, duration: 20, title: "A"),
-  new Event(startMinuteOfDay: 8 * 60, duration: 30, title: "B"),
-  new Event(startMinuteOfDay: 8 * 60, duration: 60, title: "C"),
-  new Event(startMinuteOfDay: 8 * 60 + 10, duration: 20, title: "D"),
-  new Event(startMinuteOfDay: 8 * 60 + 30, duration: 30, title: "E"),
-  new Event(startMinuteOfDay: 23 * 60, duration: 60, title: "Midnight Snack"),
-];
-
-List<Event> eventsOfDay2 = <Event>[
-  new Event(startMinuteOfDay: 1 * 60, duration: 90, title: "Sleep Walking"),
-  new Event(startMinuteOfDay: 7 * 60, duration: 60, title: "Drive To Work"),
-  new Event(startMinuteOfDay: 23 * 60, duration: 60, title: "Midnight Snack"),
-];
-
 class DayView extends StatefulWidget {
   @override
   State createState() => new _DayViewState();
@@ -56,11 +29,22 @@ class DayView extends StatefulWidget {
 
 class _DayViewState extends State<DayView> {
   DateTime _selectedDate;
+  List<Event> _events;
 
   @override
   void initState() {
     super.initState();
     _selectedDate = new DateTime.now();
+
+    _events = <Event>[
+      new Event(startMinuteOfDay: 0, duration: 60, title: "Midnight Party"),
+      new Event(
+          startMinuteOfDay: 6 * 60, duration: 2 * 60, title: "Morning Routine"),
+      new Event(startMinuteOfDay: 6 * 60, duration: 60, title: "Eat Breakfast"),
+      new Event(startMinuteOfDay: 7 * 60, duration: 60, title: "Get Dressed"),
+      new Event(
+          startMinuteOfDay: 18 * 60, duration: 60, title: "Take Dog For A Walk"),
+    ];
   }
 
   setDate(DateTime selectedDate) {
@@ -107,11 +91,8 @@ class _DayViewState extends State<DayView> {
   }
 
   List<StartDurationItem> _getEventsOfDay(DateTime day) {
-    List<Event> events;
-    //handle events using events map
-    events = eventsOfDay0;
-
-    return events
+    
+    return _events
         .map(
           (event) => new StartDurationItem(
                 startMinuteOfDay: event.startMinuteOfDay,
