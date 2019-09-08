@@ -34,8 +34,11 @@ class _DayViewState extends State<DayView> {
 
   List<DateTime> getDaysRange(DateTime selectedDate) {
     List<DateTime> daysList = <DateTime>[];
+    int weekDay = selectedDate.weekday;
+    //get the monday of the week
+    DateTime mondayDateTime = selectedDate.toUtc().subtract(new Duration(days: weekDay - 1)).toLocal();
     for(int i = 0; i <= 6; i++) {
-      daysList.add(selectedDate.toUtc().add(new Duration(days: i)).toLocal());
+      daysList.add(mondayDateTime.toUtc().add(new Duration(days: i)).toLocal());
     }
     return daysList;
   }
@@ -47,7 +50,7 @@ class _DayViewState extends State<DayView> {
   }
 
   void _openAppointmentForm([int id = -1]) async { 
-    Event newEvent = new Event(duration: 0, title: '', startTime: DateTime.now());
+    Event newEvent = new Event(duration: 60, title: '', startTime: DateTime.now());
     if( id > -1 ) {
       newEvent = _events[id];  
     }
@@ -56,12 +59,59 @@ class _DayViewState extends State<DayView> {
       context,
       MaterialPageRoute(builder: (context) => AppointmentView(event: newEvent, id: id)),
     ).then((msg) {
-      //update event list
-      if( msg.id > -1 ) {
-        _events[msg.id] = msg.event;
+      Event newEv = msg.event;
+      int evId = msg.id;
+      bool isValid = true;
+
+      //delete an existing event
+      if( msg.delete && evId > -1 ) {
+        _events.removeAt(evId);
+        return;
       }
-      else {
-        _events.add(msg.event);
+
+      //check if there are any clashes or not
+      _events.forEach((event) {
+        int eventIndex = _events.indexOf(event);
+        //skip check if event ids are same
+        if( eventIndex == evId ) {
+          return;
+        }
+
+        //event times
+        DateTime eventStart = event.startTime;
+        DateTime eventEnd = event.startTime.add(new Duration(minutes: event.duration));
+
+        //newEv times
+        DateTime newEvStart = newEv.startTime;
+        DateTime newEvEnd = newEv.startTime.add(new Duration(minutes: newEv.duration));
+
+        if( eventStart.millisecondsSinceEpoch <= newEvEnd.millisecondsSinceEpoch && 
+            eventEnd.millisecondsSinceEpoch >= newEvStart.millisecondsSinceEpoch
+        ) {
+          isValid = false;
+        }
+      });
+
+      //show a pop up if event overlapped
+      if( !isValid ) {
+        print('not valid');
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: new Text('OOPS'),
+              content: new Text('Sorry your appointment overlapped with an existing one! Please change the time'),
+            );
+          }
+        );
+      } else {
+        //update event list
+        if( evId > -1 ) {
+          _events[evId] = newEv;
+        }
+        else {
+          _events.add(msg.event);
+        }
       }
     });
   }

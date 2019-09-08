@@ -41,7 +41,13 @@ class _AppointmentViewState extends State<AppointmentView> {
   saveEvent() {
     //save event
     Event ev = new Event(title: _title, startTime: _startTime, duration: _duration);
-    Navigator.pop(context, new EventMsg(event: ev, id: id));
+    Navigator.pop(context, new EventMsg(event: ev, id: id, delete: false));
+  }
+  
+  deleteEvent() {
+    //save event
+    Event ev = new Event(title: _title, startTime: _startTime, duration: _duration);
+    Navigator.pop(context, new EventMsg(event: ev, id: id, delete: true));
   }
 
   @override
@@ -51,6 +57,14 @@ class _AppointmentViewState extends State<AppointmentView> {
       child: Scaffold(
         appBar: new AppBar(
           title: new Text("Book an appointment"),
+          actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: () {
+              deleteEvent();
+            },
+          )
+        ],
         ),
         body: new SingleChildScrollView(
           child: Container(
@@ -160,7 +174,7 @@ class BasicDateTimeField extends StatelessWidget {
         onShowPicker: (context, currentValue) async {
           final date = await showDatePicker(
               context: context,
-              firstDate: DateTime(1900),
+              firstDate: DateTime.now(),
               initialDate: currentValue ?? DateTime.now(),
               lastDate: DateTime(2100));
           if (date != null) {

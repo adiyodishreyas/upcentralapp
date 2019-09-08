@@ -18,9 +18,11 @@ class EventMsg {
 
   EventMsg({
     @required this.event,
-    @required this.id
+    @required this.id,
+    @required this.delete
   });
 
   final Event event;
   final int id;
+  final bool delete;
 }
