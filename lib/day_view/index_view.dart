@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-// import 'package:meta/meta.dart';
-
 import 'package:calendar_views/day_view.dart';
-
 import '../utils/all.dart';
 import '../appointment_form_view/index_view.dart';
 import 'models/event.dart';
+import 'components.dart';
 
 class DayView extends StatefulWidget {
   @override
@@ -132,12 +130,13 @@ class _DayViewState extends State<DayView> {
             return new StartDurationItem(
                 startMinuteOfDay: event.startTime.hour * 60 + event.startTime.minute,
                 duration: event.duration,
-                builder: (context, itemPosition, itemSize) => _eventBuilder(
+                builder: (context, itemPosition, itemSize) => eventBuilder(
                       context,
                       itemPosition,
                       itemSize,
                       event,
-                      id
+                      id,
+                      _openAppointmentForm
                     ),
               );
           }
@@ -169,7 +168,7 @@ class _DayViewState extends State<DayView> {
             new Container(
               color: Colors.grey[200],
               child: new DayViewDaysHeader(
-                headerItemBuilder: _headerItemBuilder,
+                headerItemBuilder: headerItemBuilder,
               ),
             ),
             new Expanded(
@@ -179,14 +178,14 @@ class _DayViewState extends State<DayView> {
                   components: <ScheduleComponent>[
                     new TimeIndicationComponent.intervalGenerated(
                       generatedTimeIndicatorBuilder:
-                          _generatedTimeIndicatorBuilder,
+                          generatedTimeIndicatorBuilder,
                     ),
                     new SupportLineComponent.intervalGenerated(
-                      generatedSupportLineBuilder: _generatedSupportLineBuilder,
+                      generatedSupportLineBuilder: generatedSupportLineBuilder,
                     ),
                     new DaySeparationComponent(
                       generatedDaySeparatorBuilder:
-                          _generatedDaySeparatorBuilder,
+                          generatedDaySeparatorBuilder,
                     ),
                     new EventViewComponent(
                       getEventsOfDay: _getEventsOfDay,
@@ -203,107 +202,6 @@ class _DayViewState extends State<DayView> {
         tooltip: 'Increment',
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
-  }
-
-  Widget _headerItemBuilder(BuildContext context, DateTime day) {
-    return new Container(
-      color: Colors.grey[300],
-      padding: new EdgeInsets.symmetric(vertical: 4.0),
-      child: new Column(
-        children: <Widget>[
-          new Text(
-            "${weekdayToAbbreviatedString(day.weekday)}",
-            style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 9.5),
-          ),
-          new Text(
-            "${day.day}",
-            style: new TextStyle(fontSize: 8),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Positioned _generatedTimeIndicatorBuilder(
-    BuildContext context,
-    ItemPosition itemPosition,
-    ItemSize itemSize,
-    int minuteOfDay,
-  ) {
-    return new Positioned(
-      top: itemPosition.top,
-      left: itemPosition.left,
-      width: itemSize.width,
-      height: itemSize.height,
-      child: new Container(
-        child: new Center(
-          child: new Text(minuteOfDayToHourMinuteString(minuteOfDay)),
-        ),
-      ),
-    );
-  }
-
-  Positioned _generatedSupportLineBuilder(
-    BuildContext context,
-    ItemPosition itemPosition,
-    double itemWidth,
-    int minuteOfDay,
-  ) {
-    return new Positioned(
-      top: itemPosition.top,
-      left: itemPosition.left,
-      width: itemWidth,
-      child: new Container(
-        height: 0.7,
-        color: Colors.grey[700],
-      ),
-    );
-  }
-
-  Positioned _generatedDaySeparatorBuilder(
-    BuildContext context,
-    ItemPosition itemPosition,
-    ItemSize itemSize,
-    int daySeparatorNumber,
-  ) {
-    return new Positioned(
-      top: itemPosition.top,
-      left: itemPosition.left,
-      width: itemSize.width,
-      height: itemSize.height,
-      child: new Center(
-        child: new Container(
-          width: 0.7,
-          color: Colors.grey,
-        ),
-      ),
-    );
-  }
-
-  Positioned _eventBuilder(
-    BuildContext context,
-    ItemPosition itemPosition,
-    ItemSize itemSize,
-    Event event,
-    int id
-  ) {
-    return new Positioned(
-      top: itemPosition.top,
-      left: itemPosition.left,
-      width: itemSize.width,
-      height: itemSize.height,
-      child: new InkWell(
-        onTap: () {
-          _openAppointmentForm(id);
-        },
-        child: new Container(
-          margin: new EdgeInsets.only(left: 1, right: 1, bottom: 1.0),
-          padding: new EdgeInsets.all(2.0),
-          color: Colors.green[200],
-          child: new Text("${event.title}"),
-        ),
-      )
     );
   }
 }
