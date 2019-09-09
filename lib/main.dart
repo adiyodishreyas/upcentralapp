@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'day_view.dart';
+import 'day_view/index_view.dart';
 
 void main() => runApp(MyApp());
 

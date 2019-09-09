@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 
 import 'package:calendar_views/day_view.dart';
 
-import 'utils/all.dart';
-import 'appointment_form_view.dart';
-
+import '../utils/all.dart';
+import '../appointment_form_view/index_view.dart';
+import 'models/event.dart';
 
 class DayView extends StatefulWidget {
   @override
@@ -21,32 +21,13 @@ class _DayViewState extends State<DayView> {
     super.initState();
     _selectedDate = new DateTime.now();
   
-    _events = <Event>[
-      new Event(duration: 60, title: "Party Time", startTime: DateTime.now())
-    ];
+    _events = <Event>[];
   }
 
   setDate(DateTime selectedDate) {
     setState(() {
       _selectedDate = selectedDate;
     });
-  }
-
-  List<DateTime> getDaysRange(DateTime selectedDate) {
-    List<DateTime> daysList = <DateTime>[];
-    int weekDay = selectedDate.weekday;
-    //get the monday of the week
-    DateTime mondayDateTime = selectedDate.toUtc().subtract(new Duration(days: weekDay - 1)).toLocal();
-    for(int i = 0; i <= 6; i++) {
-      daysList.add(mondayDateTime.toUtc().add(new Duration(days: i)).toLocal());
-    }
-    return daysList;
-  }
-
-  String _minuteOfDayToHourMinuteString(int minuteOfDay) {
-    return "${(minuteOfDay ~/ 60).toString().padLeft(2, "0")}"
-        ":"
-        "${(minuteOfDay % 60).toString().padLeft(2, "0")}";
   }
 
   void _openAppointmentForm([int id = -1]) async { 
@@ -257,7 +238,7 @@ class _DayViewState extends State<DayView> {
       height: itemSize.height,
       child: new Container(
         child: new Center(
-          child: new Text(_minuteOfDayToHourMinuteString(minuteOfDay)),
+          child: new Text(minuteOfDayToHourMinuteString(minuteOfDay)),
         ),
       ),
     );
